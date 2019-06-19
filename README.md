@@ -9,6 +9,11 @@
 
 Сравнить время работы.
 
+---
+    Benchmark                          Mode  Cnt      Score   Error  Units
+    Task1Benchmarks.memoryMappedAdder  avgt       25871,163          ms/op
+    Task1Benchmarks.sequentialAdder    avgt       36210,455          ms/op
+
 ### Задача 2
 
 Сгенерировать файл, содержащий 2000 128-битных случайных целых чисел, 
@@ -25,7 +30,13 @@
 4. c помощью RxJava (или аналога)
 
 Измерить время выполнения для каждого случая. 
-Использовать уровень параллельности в соответствии с числом ядер вашего CPU. 
+Использовать уровень параллельности в соответствии с числом ядер вашего CPU.
+---
+    Benchmark                          Mode  Cnt      Score   Error  Units
+    Task2Benchmarks.akkaActorsCounter  avgt        8481,117          ms/op
+    Task2Benchmarks.forkJoinCounter    avgt        6536,260          ms/op
+    Task2Benchmarks.rxCounter          avgt        6772,476          ms/op
+    Task2Benchmarks.sequentialCounter  avgt       20329,146          ms/op
 
 ### Задача 3
 
