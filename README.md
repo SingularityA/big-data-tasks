@@ -10,9 +10,18 @@
 Сравнить время работы.
 
 ---
-    Benchmark                          Mode  Cnt      Score   Error  Units
-    Task1Benchmarks.memoryMappedAdder  avgt       25871,163          ms/op
-    Task1Benchmarks.sequentialAdder    avgt       36210,455          ms/op
+###### На системе AMD FX(tm)-4300 Quad-Core Processor 3.80 GHz 2(4) ядра, 16 RAM
+
+    Benchmark                              Mode  Cnt      Score       Error  Units
+    SummationBenchmarks.memoryMappedAdder  avgt    5  24930,099 ± 28612,167  ms/op
+    SummationBenchmarks.sequentialAdder    avgt    5  33435,244 ±   796,352  ms/op
+  
+---
+###### На системе Intel(R) Core(TM) i7-6700HQ CPU 2.60 GHz 4(8) ядра, 8 RAM
+
+    Benchmark                              Mode  Cnt      Score      Error  Units
+    SummationBenchmarks.memoryMappedAdder  avgt    5  10263,986 ±  226,520  ms/op
+    SummationBenchmarks.sequentialAdder    avgt    5  28483,712 ± 1732,589  ms/op
 
 ### Задача 2
 
@@ -33,11 +42,23 @@
 Использовать уровень параллельности в соответствии с числом ядер вашего CPU.
 
 ---
-    Benchmark                          Mode  Cnt      Score   Error  Units
-    Task2Benchmarks.akkaActorsCounter  avgt        8481,117          ms/op
-    Task2Benchmarks.forkJoinCounter    avgt        6536,260          ms/op
-    Task2Benchmarks.rxCounter          avgt        6772,476          ms/op
-    Task2Benchmarks.sequentialCounter  avgt       20329,146          ms/op
+###### На системе AMD FX(tm)-4300 Quad-Core Processor 3.80 GHz 2(4) ядра, 16 RAM
+
+    Benchmark                                  Mode  Cnt      Score     Error  Units
+    FactorizationBenchmarks.akkaActorsCounter  avgt    5  14027,945 ± 434,810  ms/op
+    FactorizationBenchmarks.forkJoinCounter    avgt    5  10351,571 ± 137,874  ms/op
+    FactorizationBenchmarks.rxCounter          avgt    5  13626,931 ± 133,379  ms/op
+    FactorizationBenchmarks.sequentialCounter  avgt    5  27426,060 ±  77,740  ms/op
+
+---
+###### На системе Intel(R) Core(TM) i7-6700HQ CPU 2.60 GHz 4(8) ядра, 8 RAM
+
+    Benchmark                                  Mode  Cnt      Score      Error  Units
+    FactorizationBenchmarks.akkaActorsCounter  avgt    5   5996,157 ±  153,858  ms/op
+    FactorizationBenchmarks.forkJoinCounter    avgt    5   6427,210 ± 2288,018  ms/op
+    FactorizationBenchmarks.rxCounter          avgt    5   7464,831 ±   85,957  ms/op
+    FactorizationBenchmarks.sequentialCounter  avgt    5  25005,999 ±  569,943  ms/op
+
 
 ### Задача 3
 
