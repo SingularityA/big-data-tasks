@@ -28,4 +28,19 @@ public class ElectionStatsTests {
     public void task2() {
         counter.countFavouriteCandidate();
     }
+
+    @Test
+    public void task3() {
+        counter.countMaxDifference();
+    }
+
+    @Test
+    public void task4() {
+        counter.countVariance();
+    }
+
+    @Test
+    public void task5() {
+        counter.countSummaryTables();
+    }
 }

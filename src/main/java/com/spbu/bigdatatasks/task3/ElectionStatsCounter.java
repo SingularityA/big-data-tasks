@@ -40,4 +40,7 @@ public interface ElectionStatsCounter {
 
     void countVoterTurnout();
     void countFavouriteCandidate();
+    void countMaxDifference();
+    void countVariance();
+    void countSummaryTables();
 }

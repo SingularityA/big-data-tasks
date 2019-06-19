@@ -16,12 +16,20 @@ public class SparkElectionStatsCounter implements ElectionStatsCounter {
     }
 
     // lambdas - mini tasks
-    private UnaryOperator<Dataset<Row>> voterTurnout = dataset -> dataset.groupBy(REGION)
-            .agg(
-                    sum(VOTERS_INCLUDED_IN_VOTER_LIST).as("electors"),
-                    sum(VALID_BALLOTS).as("blanks")
-            ).withColumn("percentage", col("blanks").divide(col("electors"))
-                    .multiply(100)).orderBy(col("percentage").desc());
+    private UnaryOperator<Dataset<Row>> voterTurnout = dataset -> {
+        final String electors = "electors_number";
+        final String blanks = "blanks_number";
+        final String percentage = "percentage";
+
+        return dataset.groupBy(REGION)
+                .agg(
+                        sum(VOTERS_INCLUDED_IN_VOTER_LIST).as(electors),
+                        sum(VALID_BALLOTS).as(blanks)
+                ).withColumn(
+                        percentage,
+                        col(blanks).divide(col(electors)).multiply(100)
+                ).orderBy(col(percentage).desc());
+    };
 
     private UnaryOperator<Dataset<Row>> favouriteCandidate = dataset -> {
         Dataset<Row> result = dataset.agg(
@@ -45,19 +53,70 @@ public class SparkElectionStatsCounter implements ElectionStatsCounter {
         System.out.println("FAVOURITE: " + favouriteCandidate); // Путин
 
         result = dataset
-                .filter(col(BALLOTS_RECEIVED_BY_ELECTION_COMMISSION)
-                        .$greater(300)
-                ).select(col(PEC),
+                .filter(col(BALLOTS_RECEIVED_BY_ELECTION_COMMISSION).$greater(300))
+                .select(col(PEC),
                         col(favouriteCandidate),
                         col(BALLOTS_RECEIVED_BY_ELECTION_COMMISSION))
                 .orderBy(col(favouriteCandidate).desc()).limit(1);
 
-        result.show();
-
         return result;
     };
 
-    // TODO - somehow fields are read like strings not integers
+    private UnaryOperator<Dataset<Row>> maxDifference = dataset -> {
+        final String sum1 = "sum: " + VALID_BALLOTS;
+        final String sum2 = "sum: " + VOTERS_INCLUDED_IN_VOTER_LIST;
+        final String percentage = "percentage";
+        final String maxPercentage = "max_percentage";
+        final String minPercentage = "min_percentage";
+        final String difference = "difference";
+
+        return dataset.select(REGION, TEC, VALID_BALLOTS, VOTERS_INCLUDED_IN_VOTER_LIST)
+                .groupBy(TEC).agg(
+                        first(col(REGION)).as(REGION),
+                        col(TEC),
+                        sum(VALID_BALLOTS).as(sum1),
+                        sum(VOTERS_INCLUDED_IN_VOTER_LIST).as(sum2))
+                .withColumn(percentage, col(sum1).divide(col(sum2)).multiply(100))
+                .groupBy(REGION).agg(
+                        min(percentage).as(minPercentage),
+                        max(percentage).as(maxPercentage)
+                ).withColumn(difference, col(maxPercentage).minus(col(minPercentage)))
+                .orderBy(col(difference).desc())
+                .limit(1);
+    };
+
+    private UnaryOperator<Dataset<Row>> variance = dataset -> {
+        final String percentage = "percentage";
+        final String variance = "variance";
+
+        return dataset
+                .select(REGION, VOTERS_INCLUDED_IN_VOTER_LIST, VALID_BALLOTS)
+                .withColumn(percentage, col(VALID_BALLOTS).divide(col(VOTERS_INCLUDED_IN_VOTER_LIST)).multiply(100))
+                .groupBy(REGION)
+                .agg(var_samp(percentage).as(variance))
+                .orderBy(REGION);
+    };
+
+    private UnaryOperator<Dataset<Row>> summaryTable = dataset -> {
+        Long totalSum;
+        String percents;
+        Dataset<Row> result;
+
+        for (String name: Arrays.asList(BABURIN ,GRUDININ, ZHIRINOVSKY, PUTIN, SOBCHAK, SURAIKIN, TITOV, YAVLINSKY)) {
+            percents = "percents_of " + name;
+            totalSum = dataset.select(name).agg(sum(name)).first().getLong(0);
+
+            result = dataset.select(REGION, name)
+                    .groupBy(REGION).agg(bround(sum(name).divide(totalSum).multiply(100)).as(percents))
+                    .groupBy(percents).agg(
+                            count(percents).as("number_of_regions_with_this_result")
+                    ).orderBy(col(percents).desc());
+            result.show();
+        }
+        return dataset;
+    };
+
+    // ? somehow fields are read like strings not integers ?
     private UnaryOperator<Dataset<Row>> sqlExample = dataset -> {
         String query = "SELECT '" + REGION + "', '" + TEC + "', '" + PEC + "', " +
                 "SUM('" + VALID_BALLOTS + "'), SUM('" + VOTERS_INCLUDED_IN_VOTER_LIST + "')" +
@@ -80,20 +139,38 @@ public class SparkElectionStatsCounter implements ElectionStatsCounter {
         runTask(favouriteCandidate);
     }
 
+    // task3
+    @Override
+    public void countMaxDifference() {
+        runTask(maxDifference);
+    }
+
+    // task4
+    @Override
+    public void countVariance() {
+        runTask(variance);
+    }
+
+    @Override
+    public void countSummaryTables() {
+        runTask(summaryTable);
+    }
+
     // helper function
     public void runTask(UnaryOperator<Dataset<Row>> task) {
         SparkSession spark = SparkSession.builder()
                 .master("local")
                 .appName("Spark Elections Example")
                 .getOrCreate();
+        spark.sparkContext().setLogLevel("OFF");
 
         Dataset<Row> dataset = prepareData(spark.read().csv(path));
         Dataset<Row> result  = task.apply(dataset);
 
-        dataset.show();
+        // dataset.show();
         result.show();
 
-        spark.cloneSession();
+        spark.close();
     }
 
     private Dataset<Row> prepareData(Dataset<Row> dataset) {
