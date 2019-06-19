@@ -47,9 +47,10 @@ public class SparkElectionStatsCounter implements ElectionStatsCounter {
         result = dataset
                 .filter(col(BALLOTS_RECEIVED_BY_ELECTION_COMMISSION)
                         .$greater(300)
-                ).select(col(BALLOTS_RECEIVED_BY_ELECTION_COMMISSION),
-                        col(PEC),
-                        col(favouriteCandidate)).orderBy(col(favouriteCandidate).desc());
+                ).select(col(PEC),
+                        col(favouriteCandidate),
+                        col(BALLOTS_RECEIVED_BY_ELECTION_COMMISSION))
+                .orderBy(col(favouriteCandidate).desc()).limit(1);
 
         result.show();
 
