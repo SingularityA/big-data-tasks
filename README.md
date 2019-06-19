@@ -1,3 +1,5 @@
+## Задания по курсу 'Теория и практика больших данных'
+
 ### Задача 1
 
 Сгенерировать бинарный файл (min 2Gb), состоящий из случайных 32-рязрядных 
@@ -123,6 +125,8 @@
     ...
     
 ##### Пункт 5
+Подсчет по региону (вместо УИК) для более внятных чисел
+
     +-------------------------------------+----------------------------------+
     |percents_of Бабурин Сергей Николаевич|number_of_regions_with_this_result|
     +-------------------------------------+----------------------------------+
@@ -206,3 +210,23 @@
     |                                      1.0|                                40|
     |                                      0.0|                                32|
     +-----------------------------------------+----------------------------------+
+
+---
+###### На системе AMD FX(tm)-4300 Quad-Core Processor 3.80 GHz 2(4) ядра, 16 RAM
+
+    Benchmark                      Mode  Cnt   Score   Error  Units
+    ElectionStatsBenchmarks.task1  avgt        2,419           s/op
+    ElectionStatsBenchmarks.task2  avgt        6,437           s/op
+    ElectionStatsBenchmarks.task3  avgt       29,498           s/op
+    ElectionStatsBenchmarks.task4  avgt        2,753           s/op
+    ElectionStatsBenchmarks.task5  avgt       50,039           s/op
+
+---
+###### На системе Intel(R) Core(TM) i7-6700HQ CPU 2.60 GHz 4(8) ядра, 8 RAM
+
+    Benchmark                      Mode  Cnt   Score   Error  Units
+    ElectionStatsBenchmarks.task1  avgt        1,360           s/op
+    ElectionStatsBenchmarks.task2  avgt        3,649           s/op
+    ElectionStatsBenchmarks.task3  avgt        7,844           s/op
+    ElectionStatsBenchmarks.task4  avgt        1,350           s/op
+    ElectionStatsBenchmarks.task5  avgt       21,301           s/op
