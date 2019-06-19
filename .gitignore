@@ -127,7 +127,4 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
-### Ignore resources ###
-src/main/resources/
-
 # End of https://www.gitignore.io/api/java,gradle,intellij
