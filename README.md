@@ -31,6 +31,7 @@
 
 Измерить время выполнения для каждого случая. 
 Использовать уровень параллельности в соответствии с числом ядер вашего CPU.
+
 ---
     Benchmark                          Mode  Cnt      Score   Error  Units
     Task2Benchmarks.akkaActorsCounter  avgt        8481,117          ms/op
